@@ -333,8 +333,7 @@ def process_csv(df: pd.DataFrame, season_hint: Optional[str], prefer_time: bool,
     final.attrs["odds_tag"] = tag
     return final
 
-def main():
-    args = parse_args()
+def _build_from_args(args: Args) -> pd.DataFrame:
     urls = build_urls(args)
     if not urls:
         print("[ERROR] Provide --seasons and/or --urls (Football-Data).", file=sys.stderr)
@@ -368,6 +367,33 @@ def main():
     print(f"✅ Saved: {out_path}")
     print(f"Rows: {len(all_df)}")
     print("Columns:", list(all_df.columns))
+    return all_df
+
+
+def build_premier_dataset(
+        seasons: List[str],
+        urls: Optional[List[str]] = None,
+        out: str = "premier_dataset_final.csv",
+        prefer_time: bool = False,
+        prefer_odds: Optional[str] = None,
+) -> pd.DataFrame:
+    if urls is None:
+        urls = []
+
+    args = Args(
+        seasons=seasons,
+        urls=urls,
+        out=out,
+        prefer_time=prefer_time,
+        prefer_odds=prefer_odds,
+    )
+    return _build_from_args(args)
+
+
+def main():
+    args = parse_args()
+    _build_from_args(args)
+
 
 if __name__ == "__main__":
     main()
